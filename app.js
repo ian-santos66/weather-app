@@ -5,14 +5,15 @@ const PORT = process.env.PORT || 3030
 const app = express()
 app.use(express.json())
 
-app.get('/weather', async (req, res) => {
+app.get('/weather/:city', async (req, res) => {
+    const city = req.params.city
     const apiKey = process.env.WEATHER_API_KEY
-    const url = `https://api.openweathermap.org/data/2.5/weather?q=Douradina&appid=${apiKey}&units=metric`
+    const url = `https://api.openweathermap.org/data/2.5/weather?q=${city}&appid=${apiKey}&units=metric`
 
     const response = await fetch(url)
-
-    if (!url.ok) {
-        console.log('fdeu erro')
+    
+    if (!response.ok) {
+        return res.status(response.status).json({ success: false, error: 'City not found' })
     }
 
     const data = await response.json()
