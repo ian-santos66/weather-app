@@ -16,7 +16,7 @@ app.get('/weather', async (req, res) => {
     }
 
     const data = await response.json()
-    res.status(200).json({success: true, data: data})
+    res.status(200).json({success: true, data: data.main.temp})
 })
 
 app.listen(PORT, async () => {
