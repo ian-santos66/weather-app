@@ -1,6 +1,7 @@
 import User from '../models/user.model.js'
 import mongoose from 'mongoose'
 import jwt from 'jsonwebtoken'
+import bcrypt from 'bcrypt'
 
 export async function signUp(req, res, next) {
     const session =  await mongoose.startSession()
@@ -16,7 +17,9 @@ export async function signUp(req, res, next) {
             throw error
         }
 
-        const [newUser] = await User.create([{name, email, password}], {session})
+        const hashPassword = await bcrypt.hash(password, 10)
+
+        const [newUser] = await User.create([{name, email, password: hashPassword}], {session})
 
         const token = jwt.sign({userId: newUser._id}, process.env.JWT_SECRET, {expiresIn: process.env.JWT_EXPIRES_IN})
 
@@ -48,18 +51,19 @@ export async function signIn(req, res, next) {
         const user = await User.findOne({email})
 
         if (!user) {
-            const error = new Error('User not found')
-            error.statusCode = 404
-            throw error
-        }
-
-        const passwordIsValid = user.password == password
-
-        if (!passwordIsValid) {
-            const error = new Error('Invalid password')
+            const error = new Error('Invalid credentials')
             error.statusCode = 401
             throw error
         }
+
+        const passwordIsValid = await bcrypt.compare(password, user.password)
+
+        if (!passwordIsValid) {
+            const error = new Error('Invalid credentials')
+            error.statusCode = 401
+            throw error
+        }
+
 
         const token = jwt.sign({userId: user._id}, process.env.JWT_SECRET, {expiresIn: process.env.JWT_EXPIRES_IN})
 
