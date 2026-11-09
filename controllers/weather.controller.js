@@ -1,3 +1,4 @@
+
 export const getWeatherByCity = async (req, res, next) => {
     try{
         const city = req.params.city
@@ -17,6 +18,7 @@ export const getWeatherByCity = async (req, res, next) => {
             temp: data.main.temp,
             feels: data.main.feels_like
         } 
+
         return res.status(200).json({success: true, data: informations})
     } catch (error) {
         next(error)
