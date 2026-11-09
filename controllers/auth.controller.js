@@ -1,5 +1,6 @@
 import User from '../models/user.model.js'
 import mongoose from 'mongoose'
+import jwt from 'jsonwebtoken'
 
 export async function signUp(req, res, next) {
     const session =  await mongoose.startSession()
@@ -7,7 +8,7 @@ export async function signUp(req, res, next) {
 
     try {
         const {name, email, password} = req.body
-        const existUser = await User.findOne({email})
+        const existUser = await User.findOne({email}).session(session)
 
         if (existUser) {
             const error = new Error('User already exists')
@@ -15,21 +16,29 @@ export async function signUp(req, res, next) {
             throw error
         }
 
-        const newUser = await User.create([{name, email, password}], {session})
+        const [newUser] = await User.create([{name, email, password}], {session})
+
+        const token = jwt.sign({userId: newUser._id}, process.env.JWT_SECRET, {expiresIn: process.env.JWT_EXPIRES_IN})
+
+        const userResponse = newUser.toObject()
+
+        delete userResponse.password
 
         await session.commitTransaction()
-        session.endSession()
 
         res.status(201).json({
             success: true,
             message: 'User created in successfully',
-            data: newUser
+            data: {
+                user: userResponse,
+                token
+            }
         })
-
     } catch (error) {
         await session.abortTransaction()
-        session.endSession()
         next(error)
+    } finally {
+        session.endSession()
     }
 }
 
@@ -52,10 +61,18 @@ export async function signIn(req, res, next) {
             throw error
         }
 
+        const token = jwt.sign({userId: user._id}, process.env.JWT_SECRET, {expiresIn: process.env.JWT_EXPIRES_IN})
+
+        const userResponse = user.toObject()
+        delete userResponse.password
+
         res.status(200).json({
             success: true,
             message: 'User signed in successfully',
-            data: user
+            data: {
+                user: userResponse,
+                token
+            }
         })
     } catch (error) {
         next(error)
