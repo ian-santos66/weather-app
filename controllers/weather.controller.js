@@ -1,3 +1,4 @@
+import { newSearch } from '../controllers/search.controller.js'
 
 export const getWeatherByCity = async (req, res, next) => {
     try{
@@ -11,15 +12,16 @@ export const getWeatherByCity = async (req, res, next) => {
             return res.status(404).json({success: false, error: 'City not found'})
         }
 
-        const data = await response.json()
-        const informations = {
-            country: data.sys.country,
-            name: data.name,
-            temp: data.main.temp,
-            feels: data.main.feels_like
+        const apiData = await response.json()
+        const data = {
+            country: apiData.sys.country,
+            name: apiData.name,
+            temp: apiData.main.temp,
+            feels: apiData.main.feels_like
         } 
+        newSearch(req.user, data)
 
-        return res.status(200).json({success: true, data: informations})
+        return res.status(200).json({success: true, data})
     } catch (error) {
         next(error)
     }
