@@ -8,17 +8,29 @@ export async function newSearch(user, data) {
     try {
         const search = await Search.create([{
             userName: user.name,
-            userEmail: user.email,
+            userId: user._id,
             country: data.country,
             city: data.name,
             temp: data.temp,
             feels: data.feels
         }], {session})
-        console.log(search)
         await session.commitTransaction()
     } catch(error) {
         await session.abortTransaction()
     } finally {
         session.endSession()
+    }
+}
+
+export const getUserHistory = async(req, res, next) => {
+    try {
+        const userHistory = await Search.find({userId: req.user._id})
+        if (!userHistory) {
+            return res.status(404).json({success: false, message: 'this user no have searchs on history'})
+        }
+        
+        return res.status(200).json({success: true, data: userHistory})
+    } catch (error) {
+        next(error)
     }
 }

@@ -1,3 +1,4 @@
+import { ObjectId } from 'mongodb'
 import mongoose from 'mongoose' 
 
 const searchSchema = new mongoose.Schema({
@@ -5,7 +6,7 @@ const searchSchema = new mongoose.Schema({
         type: String,
         required: true
     },
-    userEmail: {
+    userId: {
         type: String,
         required: true
     },
