@@ -15,7 +15,7 @@ export async function newSearch(user, data) {
             feels: data.feels
         }], {session})
         console.log(search)
-        session.commitTransaction()
+        await session.commitTransaction()
     } catch(error) {
         await session.abortTransaction()
     } finally {
