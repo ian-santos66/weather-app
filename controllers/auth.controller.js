@@ -4,12 +4,9 @@ import jwt from 'jsonwebtoken'
 import bcrypt from 'bcrypt'
 
 export async function signUp(req, res, next) {
-    const session =  await mongoose.startSession()
-    session.startTransaction()
-
     try {
         const {name, email, password} = req.body
-        const existUser = await User.findOne({email}).session(session)
+        const existUser = await User.findOne({email})
 
         if (existUser) {
             const error = new Error('User already exists')
@@ -19,15 +16,13 @@ export async function signUp(req, res, next) {
 
         const hashPassword = await bcrypt.hash(password, 10)
 
-        const [newUser] = await User.create([{name, email, password: hashPassword}], {session})
+        const newUser = await User.create({name, email, password: hashPassword})
 
         const token = jwt.sign({userId: newUser._id}, process.env.JWT_SECRET, {expiresIn: process.env.JWT_EXPIRES_IN})
 
         const userResponse = newUser.toObject()
 
         delete userResponse.password
-
-        await session.commitTransaction()
 
         res.status(201).json({
             success: true,
@@ -38,10 +33,7 @@ export async function signUp(req, res, next) {
             }
         })
     } catch (error) {
-        await session.abortTransaction()
         next(error)
-    } finally {
-        session.endSession()
     }
 }
 
