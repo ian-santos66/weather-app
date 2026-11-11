@@ -14,7 +14,12 @@ app.use('/v1', authRouter)
 app.use('/v1', weatherRouter)
 app.use('/v1', userRouter)
 
-app.listen(PORT, async () => {
-    console.log(`is running on port ${PORT}`)
+const startServer = async () => {
     await connectToDatabase()
-})
+
+    app.listen(PORT, () => {
+        console.log(`is running on port ${PORT}`)
+    })
+}
+
+startServer()

@@ -29,7 +29,7 @@ const searchSchema = new mongoose.Schema({
         type: Date,
         default: Date.now
     },
-})
+}, {timestamps: true})
 
 const Search = mongoose.model('Search', searchSchema)
 

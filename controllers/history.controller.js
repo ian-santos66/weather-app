@@ -25,8 +25,8 @@ export async function newSearch(user, data) {
 export const getUserHistory = async(req, res, next) => {
     try {
         const userHistory = await Search.find({userId: req.user._id})
-        if (!userHistory) {
-            return res.status(404).json({success: false, message: 'this user no have searchs on history'})
+        if (userHistory.length === 0) {
+            return res.status(200).json({success: true, data: []})
         }
         
         return res.status(200).json({success: true, data: userHistory})
