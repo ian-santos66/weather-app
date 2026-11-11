@@ -1,10 +1,10 @@
 import 'dotenv/config'
 import express from 'express'
 import cookieParser from 'cookie-parser'
-import weatherRouter from '../WeatherApp/routes/weather.routes.js'
-import authRouter from '../WeatherApp/routes/auth.routes.js'
-import userRouter from '../WeatherApp/routes/user.routes.js'
-import {connectToDatabase} from '../WeatherApp/database/db.js'
+import weatherRouter from './routes/weather.routes.js'
+import authRouter from './routes/auth.routes.js'
+import userRouter from './routes/user.routes.js'
+import {connectToDatabase} from './database/db.js'
 
 const PORT = process.env.PORT || 3030
 const app = express()

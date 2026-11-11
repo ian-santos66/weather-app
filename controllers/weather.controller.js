@@ -1,4 +1,4 @@
-import { newSearch } from '../controllers/search.controller.js'
+import { newSearch } from './history.controller.js'
 
 export const getWeatherByCity = async (req, res, next) => {
     try{
