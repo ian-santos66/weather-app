@@ -1,4 +1,4 @@
-import { newSearch } from './history.controller.js'
+import { saveHistory } from './history.controller.js'
 
 export const getWeatherByCity = async (req, res, next) => {
     try{
@@ -19,7 +19,7 @@ export const getWeatherByCity = async (req, res, next) => {
             temp: apiData.main.temp,
             feels: apiData.main.feels_like
         } 
-        await newSearch(req.user, data)
+        await saveHistory(req.user, data)
 
         return res.status(200).json({success: true, data})
     } catch (error) {

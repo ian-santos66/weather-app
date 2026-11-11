@@ -2,24 +2,19 @@ import Search from "../models/search.model.js";
 import mongoose from 'mongoose'
 import User from "../models/user.model.js";
 
-export async function newSearch(user, data) {
-    const session = await mongoose.startSession()
-    session.startTransaction()
+export async function saveHistory(user, data) {
     try {
-        const search = await Search.create([{
+        await Search.create([{
             userName: user.name,
             userId: user._id,
             country: data.country,
             city: data.name,
             temp: data.temp,
             feels: data.feels
-        }], {session})
-        await session.commitTransaction()
+        }])
     } catch(error) {
-        await session.abortTransaction()
-    } finally {
-        session.endSession()
-    }
+        console.error('Failed to save search History', error)
+    } 
 }
 
 export const getUserHistory = async(req, res, next) => {
