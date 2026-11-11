@@ -27,7 +27,7 @@ const searchSchema = new mongoose.Schema({
     },
     date: {
         type: Date,
-        default: new Date()
+        default: Date.now
     },
 })
 
